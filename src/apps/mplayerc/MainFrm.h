@@ -1348,6 +1348,7 @@ private:
 	bool		m_bLeftClickPending = false;
 	UINT		m_nLeftClickFlags = 0;
 	CPoint		m_ptLeftClick;
+	DWORD		m_dwLeftClickDownTick = 0;
 	CPoint		m_leftLongPressSpeedPoint;
 	double		m_leftLongPressSpeedPreviousRate = 1.0;
 	bool		m_bWaitingRButtonUp = false;

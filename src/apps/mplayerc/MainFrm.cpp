@@ -3837,6 +3837,11 @@ void CMainFrame::CancelPendingLeftClick()
 
 void CMainFrame::ScheduleOrFireLeftClick(UINT nFlags, CPoint point)
 {
+	// PotPlayer does not publish its timer. 200 ms is the Windows minimum
+	// double-click speed and the interval those players use, counted from
+	// the press rather than from the release.
+	const UINT kLeftClickWindowMs = 200;
+
 	if (!AssignedMouseToCmd(MOUSE_CLICK_LEFT, nFlags)) {
 		return;
 	}
@@ -3846,10 +3851,16 @@ void CMainFrame::ScheduleOrFireLeftClick(UINT nFlags, CPoint point)
 		return;
 	}
 
+	const UINT elapsed = GetTickCount() - m_dwLeftClickDownTick;
+	if (elapsed >= kLeftClickWindowMs) {
+		MouseMessage(MOUSE_CLICK_LEFT, nFlags, point);
+		return;
+	}
+
 	m_bLeftClickPending = true;
 	m_nLeftClickFlags = nFlags;
 	m_ptLeftClick = point;
-	SetTimer(TIMER_MOUSE_LEFT_CLICK, GetDoubleClickTime(), nullptr);
+	SetTimer(TIMER_MOUSE_LEFT_CLICK, kLeftClickWindowMs - elapsed, nullptr);
 }
 
 void CMainFrame::OnLButtonDown(UINT nFlags, CPoint point)
@@ -3873,6 +3884,7 @@ void CMainFrame::OnLButtonDown(UINT nFlags, CPoint point)
 
 	CancelPendingLeftClick();
 	m_bLeftClickDefer = false;
+	m_dwLeftClickDownTick = GetTickCount();
 	m_bLeftMouseDown = TRUE;
 	BeginLeftLongPressSpeed(nFlags, point);
 
