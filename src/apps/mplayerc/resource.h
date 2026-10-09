@@ -144,6 +144,7 @@
 #define ID_VIEW_PRESETS_NORMAL          829
 #define ID_VIEW_FULLSCREEN              830
 #define ID_VIEW_FULLSCREEN_2            831
+#define ID_VIEW_TOGGLE_MAXIMIZE         1204
 #define ID_VIEW_ZOOM_50                 832
 #define ID_VIEW_ZOOM_100                833
 #define ID_VIEW_ZOOM_200                834
@@ -1103,6 +1104,7 @@
 #define IDS_AG_VIEW_NORMAL              32914
 #define IDS_AG_FULLSCREEN               32915
 #define IDS_AG_FULLSCREEN_2             32916
+#define IDS_AG_TOGGLE_MAXIMIZE          44105
 #define IDS_AG_ZOOM_AUTO_FIT            32917
 #define IDS_AG_VIDFRM_HALF              32918
 #define IDS_AG_VIDFRM_NORMAL            32919
@@ -1816,8 +1818,8 @@
 //
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        44105
-#define _APS_NEXT_COMMAND_VALUE         1204
+#define _APS_NEXT_RESOURCE_VALUE        44106
+#define _APS_NEXT_COMMAND_VALUE         1205
 #define _APS_NEXT_CONTROL_VALUE         22054
 #define _APS_NEXT_SYMED_VALUE           24044
 #endif

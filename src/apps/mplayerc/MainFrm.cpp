@@ -305,6 +305,7 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_COMMAND(ID_VIEW_PRESETS_NORMAL, OnViewNormal)
 	ON_COMMAND(ID_VIEW_FULLSCREEN, OnViewFullscreen)
 	ON_COMMAND(ID_VIEW_FULLSCREEN_2, OnViewFullscreenSecondary)
+	ON_COMMAND(ID_VIEW_TOGGLE_MAXIMIZE, OnViewToggleMaximize)
 
 	ON_COMMAND(ID_WINDOW_TO_PRIMARYSCREEN, OnMoveWindowToPrimaryScreen)
 
@@ -3019,6 +3020,14 @@ void CMainFrame::OnTimer(UINT_PTR nIDEvent)
 				m_wndInfoBar.SetLine(ResStr(IDS_INFOBAR_SUBTITLES), Subtitles);
 			}
 		break;
+		case TIMER_MOUSE_LEFT_CLICK: {
+			KillTimer(TIMER_MOUSE_LEFT_CLICK);
+			if (m_bLeftClickPending) {
+				m_bLeftClickPending = false;
+				MouseMessage(MOUSE_CLICK_LEFT, m_nLeftClickFlags, m_ptLeftClick);
+			}
+		}
+		break;
 		case TIMER_MOUSE_LEFT_LONGPRESS_SPEED: {
 			KillTimer(TIMER_MOUSE_LEFT_LONGPRESS_SPEED);
 			if (m_bLeftLongPressSpeedCandidate) {
@@ -3811,6 +3820,38 @@ bool CMainFrame::CancelLeftLongPressSpeed(bool bRestoreRate)
 	return bWasActive;
 }
 
+bool CMainFrame::ShouldDeferLeftClick() const
+{
+	const CAppSettings& s = AfxGetAppSettings();
+	// Only wait when both actions are assigned. Otherwise a single click stays immediate.
+	return s.nMouseLeftClick != 0 && s.nMouseLeftDblClick != 0;
+}
+
+void CMainFrame::CancelPendingLeftClick()
+{
+	if (m_bLeftClickPending) {
+		KillTimer(TIMER_MOUSE_LEFT_CLICK);
+		m_bLeftClickPending = false;
+	}
+}
+
+void CMainFrame::ScheduleOrFireLeftClick(UINT nFlags, CPoint point)
+{
+	if (!AssignedMouseToCmd(MOUSE_CLICK_LEFT, nFlags)) {
+		return;
+	}
+
+	if (!ShouldDeferLeftClick()) {
+		MouseMessage(MOUSE_CLICK_LEFT, nFlags, point);
+		return;
+	}
+
+	m_bLeftClickPending = true;
+	m_nLeftClickFlags = nFlags;
+	m_ptLeftClick = point;
+	SetTimer(TIMER_MOUSE_LEFT_CLICK, GetDoubleClickTime(), nullptr);
+}
+
 void CMainFrame::OnLButtonDown(UINT nFlags, CPoint point)
 {
 	if (m_bIsMPCVRExclusiveMode && m_OSD.OnLButtonDown(nFlags, point)) {
@@ -3830,6 +3871,8 @@ void CMainFrame::OnLButtonDown(UINT nFlags, CPoint point)
 		}
 	}
 
+	CancelPendingLeftClick();
+	m_bLeftClickDefer = false;
 	m_bLeftMouseDown = TRUE;
 	BeginLeftLongPressSpeed(nFlags, point);
 
@@ -3837,6 +3880,10 @@ void CMainFrame::OnLButtonDown(UINT nFlags, CPoint point)
 		if (AssignedMouseToCmd(MOUSE_CLICK_LEFT, 0)) {
 			if (m_bLeftLongPressSpeedCandidate) {
 				m_bLeftLongPressSpeedDelayedClick = true;
+			} else if (ShouldDeferLeftClick()) {
+				// Wait for mouse-up, then for the double-click window, so a double-click
+				// does not also run the single-click command.
+				m_bLeftClickDefer = true;
 			} else {
 				m_bLeftMouseDownFullScreen = TRUE;
 				MouseMessage(MOUSE_CLICK_LEFT, nFlags, point);
@@ -3883,10 +3930,11 @@ void CMainFrame::OnLButtonUp(UINT nFlags, CPoint point)
 		return;
 	}
 
-	if (bDelayedLeftClick) {
+	if (bDelayedLeftClick || m_bLeftClickDefer) {
 		m_bLeftMouseDown = FALSE;
+		m_bLeftClickDefer = false;
 		if (!bLongPressSpeedConsumed) {
-			MouseMessage(MOUSE_CLICK_LEFT, nFlags, point);
+			ScheduleOrFireLeftClick(nFlags, point);
 		}
 		return;
 	}
@@ -3901,7 +3949,8 @@ void CMainFrame::OnLButtonUp(UINT nFlags, CPoint point)
 	}
 
 	if (AssignedMouseToCmd(MOUSE_CLICK_LEFT, 0) && !m_bFullScreen && !CursorOnD3DFullScreenWindow()) {
-		MouseMessage(MOUSE_CLICK_LEFT, nFlags, point);
+		m_bLeftMouseDown = FALSE;
+		ScheduleOrFireLeftClick(nFlags, point);
 		return;
 	}
 
@@ -3912,11 +3961,9 @@ void CMainFrame::OnLButtonDblClk(UINT nFlags, CPoint point)
 {
 	CancelLeftLongPressSpeed(true);
 	m_bLeftLongPressSpeedDelayedClick = false;
-
-	if (m_bLeftMouseDown) {
-		MouseMessage(MOUSE_CLICK_LEFT, nFlags, point);
-		m_bLeftMouseDown = FALSE;
-	}
+	CancelPendingLeftClick();
+	m_bLeftClickDefer = false;
+	m_bLeftMouseDown = FALSE;
 
 	if (!MouseMessage(MOUSE_CLICK_LEFT_DBL, nFlags, point)) {
 		__super::OnLButtonDblClk(nFlags, point);
@@ -3926,6 +3973,7 @@ void CMainFrame::OnLButtonDblClk(UINT nFlags, CPoint point)
 void CMainFrame::OnMButtonDown(UINT nFlags, CPoint point)
 {
 	CancelLeftLongPressSpeed(true);
+	CancelPendingLeftClick();
 	m_bLeftLongPressSpeedDelayedClick = false;
 	SendMessageW(WM_CANCELMODE);
 	__super::OnMButtonDown(nFlags, point);
@@ -3943,6 +3991,7 @@ void CMainFrame::OnMButtonUp(UINT nFlags, CPoint point)
 void CMainFrame::OnRButtonDown(UINT nFlags, CPoint point)
 {
 	CancelLeftLongPressSpeed(true);
+	CancelPendingLeftClick();
 	m_bLeftLongPressSpeedDelayedClick = false;
 	m_bWaitingRButtonUp = true;
 
@@ -7701,6 +7750,26 @@ void CMainFrame::OnViewFullscreen()
 		ToggleD3DFullscreen(true);
 	} else {
 		ToggleFullscreen(true, true);
+	}
+}
+
+void CMainFrame::OnViewToggleMaximize()
+{
+	if (IsD3DFullScreenMode()) {
+		ToggleD3DFullscreen(false);
+		return;
+	}
+
+	if (m_bFullScreen) {
+		// Leave fullscreen only. The previous windowed placement is restored by ToggleFullscreen.
+		ToggleFullscreen(false, false);
+		return;
+	}
+
+	if (IsIconic() || IsZoomed()) {
+		ShowWindow(SW_RESTORE);
+	} else {
+		ShowWindow(SW_MAXIMIZE);
 	}
 }
 
