@@ -46,9 +46,9 @@ jobs:
           .\\update_gcc.bat
         shell: pwsh
 
-      - name: Build MPC-BE x64 zip
+      - name: Build MPC-BE packages
         run: |
-          .\build.bat Build x64 Packages NoWait
+          .\build.bat Build Packages NoWait
         shell: pwsh
 
       - name: Upload Zip x64
@@ -63,4 +63,18 @@ jobs:
         with:
           name: "Installer x64"
           path: _bin/Packages/**/MPC-BE*.x64-installer.zip
+          compression-level: 0
+
+      - name: Upload Zip x86
+        uses: actions/upload-artifact@v7
+        with:
+          name: "Zip x86"
+          path: _bin/Packages/**/MPC-BE*.x86.7z
+          compression-level: 0
+
+      - name: Upload Installer x86
+        uses: actions/upload-artifact@v7
+        with:
+          name: "Installer x86"
+          path: _bin/Packages/**/MPC-BE*.x86-installer.zip
           compression-level: 0
