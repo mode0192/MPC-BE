@@ -1,6 +1,7 @@
 name: Build MPC-BE
 
 on:
+  workflow_dispatch:
   push:
     paths-ignore:
       - .github/workflows/main.yml
