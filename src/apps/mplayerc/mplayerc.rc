@@ -2962,6 +2962,7 @@ BEGIN
     IDS_AG_VIEW_NORMAL      "View Normal"
     IDS_AG_FULLSCREEN       "Fullscreen"
     IDS_AG_FULLSCREEN_2     "Fullscreen (w/o res.change)"
+    IDS_AG_WINDOW_FULLSCREEN  "(Window Fullscreen)"
     IDS_AG_ZOOM_AUTO_FIT    "Zoom Auto Fit"
     IDS_AG_VIDFRM_HALF      "VidFrm Half"
     IDS_AG_VIDFRM_NORMAL    "VidFrm Normal"

@@ -395,7 +395,8 @@ public:
 		TIMER_FLYBARWINDOWHIDER,
 		TIMER_DM_AUTOCHANGING,
 		TIMER_PAUSE,
-		TIMER_MOUSE_LEFT_LONGPRESS_SPEED
+		TIMER_MOUSE_LEFT_LONGPRESS_SPEED,
+		TIMER_MOUSE_LEFT_CLICK
 	};
 
 	void SetColorMenu();
@@ -994,6 +995,7 @@ public:
 	afx_msg void OnViewNormal();
 	afx_msg void OnViewFullscreen();
 	afx_msg void OnViewFullscreenSecondary();
+	afx_msg void OnViewWindowFullscreen();
 	afx_msg void OnMoveWindowToPrimaryScreen();
 
 	void ResetMenu();
@@ -1333,12 +1335,20 @@ private:
 	bool		IsLeftLongPressSpeedAvailable(UINT nFlags) const;
 	void		BeginLeftLongPressSpeed(UINT nFlags, CPoint point);
 	bool		CancelLeftLongPressSpeed(bool bRestoreRate);
+	bool		ShouldDeferLeftClick() const;
+	void		ScheduleOrFireLeftClick(UINT nFlags, CPoint point);
+	void		CancelPendingLeftClick();
 
 	BOOL		m_bLeftMouseDown			= FALSE;
 	BOOL		m_bLeftMouseDownFullScreen	= FALSE;
 	bool		m_bLeftLongPressSpeedCandidate = false;
 	bool		m_bLeftLongPressSpeedActive = false;
 	bool		m_bLeftLongPressSpeedDelayedClick = false;
+	bool		m_bLeftClickDefer = false;
+	bool		m_bLeftClickPending = false;
+	UINT		m_nLeftClickFlags = 0;
+	CPoint		m_ptLeftClick;
+	DWORD		m_dwLeftClickDownTick = 0;
 	CPoint		m_leftLongPressSpeedPoint;
 	double		m_leftLongPressSpeedPreviousRate = 1.0;
 	bool		m_bWaitingRButtonUp = false;

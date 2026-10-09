@@ -119,12 +119,13 @@ BOOL CPPageMouse::OnInitDialog()
 
 	CAppSettings& s = AfxGetAppSettings();
 
-	AddStringData(m_cmbLeftButtonClick, L"", 0);
+	AddStringData(m_cmbLeftButtonClick, L"(Do nothing)", 0);
 	AddStringData(m_cmbLeftButtonClick, ResStr(IDS_AG_PLAYPAUSE), ID_PLAY_PLAYPAUSE);
 	SelectByItemData(m_cmbLeftButtonClick, s.nMouseLeftClick);
 
-	AddStringData(m_cmbLeftButtonDblClick, L"", 0);
+	AddStringData(m_cmbLeftButtonDblClick, L"(Do nothing)", 0);
 	AddStringData(m_cmbLeftButtonDblClick, ResStr(IDS_AG_PLAYPAUSE), ID_PLAY_PLAYPAUSE);
+	AddStringData(m_cmbLeftButtonDblClick, ResStr(IDS_AG_WINDOW_FULLSCREEN), ID_VIEW_WINDOW_FULLSCREEN);
 	AddStringData(m_cmbLeftButtonDblClick, ResStr(IDS_AG_FULLSCREEN), ID_VIEW_FULLSCREEN);
 	AddStringData(m_cmbLeftButtonDblClick, ResStr(IDS_AG_FULLSCREEN_2), ID_VIEW_FULLSCREEN_2);
 	SelectByItemData(m_cmbLeftButtonDblClick, s.nMouseLeftDblClick);
