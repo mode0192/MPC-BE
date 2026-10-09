@@ -3840,7 +3840,7 @@ void CMainFrame::ScheduleOrFireLeftClick(UINT nFlags, CPoint point)
 	// PotPlayer does not publish its timer. 200 ms is the Windows minimum
 	// double-click speed and the interval those players use, counted from
 	// the press rather than from the release.
-	const UINT kLeftClickWindowMs = 200;
+	const UINT kLeftClickWindowMs = 300;
 
 	if (!AssignedMouseToCmd(MOUSE_CLICK_LEFT, nFlags)) {
 		return;
