@@ -189,7 +189,7 @@ BOOL CPPageSoundProcessing::OnInitDialog()
 	m_sldNormRealeaseTime.SetPos(s.iAudioNormRealeaseTime);
 
 	m_chkAudioFilters.SetCheck(s.bAudioFilters);
-	m_cmbFilter1Name.AddString(L"(Do nothing)");
+	m_cmbFilter1Name.AddString(L"Do nothing");
 	m_cmbFilter1Name.AddString(L"compand");
 	m_cmbFilter1Name.SetCurSel(0);
 	if (s.strAudioFilter1.GetLength()) {
