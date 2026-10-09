@@ -125,7 +125,7 @@ BOOL CPPageMouse::OnInitDialog()
 
 	AddStringData(m_cmbLeftButtonDblClick, L"(Do nothing)", 0);
 	AddStringData(m_cmbLeftButtonDblClick, ResStr(IDS_AG_PLAYPAUSE), ID_PLAY_PLAYPAUSE);
-	AddStringData(m_cmbLeftButtonDblClick, ResStr(IDS_AG_TOGGLE_MAXIMIZE), ID_VIEW_TOGGLE_MAXIMIZE);
+	AddStringData(m_cmbLeftButtonDblClick, ResStr(IDS_AG_WINDOW_FULLSCREEN), ID_VIEW_WINDOW_FULLSCREEN);
 	AddStringData(m_cmbLeftButtonDblClick, ResStr(IDS_AG_FULLSCREEN), ID_VIEW_FULLSCREEN);
 	AddStringData(m_cmbLeftButtonDblClick, ResStr(IDS_AG_FULLSCREEN_2), ID_VIEW_FULLSCREEN_2);
 	SelectByItemData(m_cmbLeftButtonDblClick, s.nMouseLeftDblClick);

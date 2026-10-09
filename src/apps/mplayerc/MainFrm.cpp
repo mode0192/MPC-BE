@@ -305,7 +305,7 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_COMMAND(ID_VIEW_PRESETS_NORMAL, OnViewNormal)
 	ON_COMMAND(ID_VIEW_FULLSCREEN, OnViewFullscreen)
 	ON_COMMAND(ID_VIEW_FULLSCREEN_2, OnViewFullscreenSecondary)
-	ON_COMMAND(ID_VIEW_TOGGLE_MAXIMIZE, OnViewToggleMaximize)
+	ON_COMMAND(ID_VIEW_WINDOW_FULLSCREEN, OnViewWindowFullscreen)
 
 	ON_COMMAND(ID_WINDOW_TO_PRIMARYSCREEN, OnMoveWindowToPrimaryScreen)
 
@@ -7765,7 +7765,7 @@ void CMainFrame::OnViewFullscreen()
 	}
 }
 
-void CMainFrame::OnViewToggleMaximize()
+void CMainFrame::OnViewWindowFullscreen()
 {
 	if (IsD3DFullScreenMode()) {
 		ToggleD3DFullscreen(false);

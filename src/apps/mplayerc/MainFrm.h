@@ -995,7 +995,7 @@ public:
 	afx_msg void OnViewNormal();
 	afx_msg void OnViewFullscreen();
 	afx_msg void OnViewFullscreenSecondary();
-	afx_msg void OnViewToggleMaximize();
+	afx_msg void OnViewWindowFullscreen();
 	afx_msg void OnMoveWindowToPrimaryScreen();
 
 	void ResetMenu();
